@@ -1,0 +1,64 @@
+{
+  "name": "lifepilot",
+  "version": "1.0.0",
+  "description": "A comprehensive full-stack AI assistant application",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "ai-agents"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:frontend && npm run install:backend && npm run install:ai",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:ai": "cd ai-agents && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:ai\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:ai": "cd ai-agents && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend && npm run build:ai",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:ai": "cd ai-agents && npm run build",
+    "test": "npm run test:frontend && npm run test:backend && npm run test:ai",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:ai": "cd ai-agents && npm test",
+    "lint": "npm run lint:frontend && npm run lint:backend && npm run lint:ai",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:ai": "cd ai-agents && npm run lint",
+    "deploy:dev": "cd infrastructure && terraform workspace select dev && terraform apply",
+    "deploy:staging": "cd infrastructure && terraform workspace select staging && terraform apply",
+    "deploy:prod": "cd infrastructure && terraform workspace select prod && terraform apply"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kelvinchau34/lifepilot.git"
+  },
+  "keywords": [
+    "ai",
+    "dashboard",
+    "assistant",
+    "langchain",
+    "react",
+    "nodejs",
+    "azure"
+  ],
+  "author": "Kelvin Chau <kelvinchau34@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kelvinchau34/lifepilot/issues"
+  },
+  "homepage": "https://github.com/kelvinchau34/lifepilot#readme"
+}
