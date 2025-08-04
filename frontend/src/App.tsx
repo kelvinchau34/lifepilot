@@ -4,10 +4,10 @@ import './index.css';
 
 function App() {
   return (
-    <div className="App">
-      <Dashboard />
+    <div>
+      <h1>LifePilot</h1>
+      {/* other content */}
     </div>
   );
 }
-
 export default App;
