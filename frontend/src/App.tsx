@@ -6,7 +6,7 @@ function App() {
   return (
     <div>
       <h1>LifePilot</h1>
-      {/* other content */}
+      <Dashboard />
     </div>
   );
 }
