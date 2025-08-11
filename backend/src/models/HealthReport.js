@@ -1,5 +1,19 @@
 const mongoose = require('mongoose');
 
+const entitySchema = new mongoose.Schema({
+  text: String,
+  label: String,
+  confidence: Number,
+  start: Number,
+  end: Number
+});
+
+const embeddingSchema = new mongoose.Schema({
+  vector: [Number],
+  text: String,
+  chunkIndex: Number
+});
+
 const healthReportSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -7,10 +21,6 @@ const healthReportSchema = new mongoose.Schema({
     required: true
   },
   filename: {
-    type: String,
-    required: true
-  },
-  filePath: {
     type: String,
     required: true
   },
@@ -22,40 +32,37 @@ const healthReportSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  status: {
-    type: String,
-    enum: ['uploading', 'processing', 'completed', 'failed'],
-    default: 'uploading'
-  },
   extractedText: {
     type: String,
     default: ''
   },
-  entities: [{
-    text: String,
-    label: String,
-    confidence: Number,
-    start: Number,
-    end: Number
-  }],
+  entities: [entitySchema],
+  entityGroups: {
+    type: Map,
+    of: [entitySchema]
+  },
+  embeddings: [embeddingSchema],
   summary: {
     type: String,
     default: ''
   },
-  insights: [{
-    type: String,
-    category: String,
-    confidence: Number
-  }],
+  reportDate: {
+    type: Date
+  },
   uploadDate: {
     type: Date,
     default: Date.now
   },
-  processedDate: {
-    type: Date
+  status: {
+    type: String,
+    enum: ['processing', 'completed', 'failed'],
+    default: 'processing'
   }
 }, {
   timestamps: true
 });
+
+// Add text index for basic search
+healthReportSchema.index({ extractedText: 'text' });
 
 module.exports = mongoose.model('HealthReport', healthReportSchema);

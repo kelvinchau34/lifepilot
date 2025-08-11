@@ -1,0 +1,46 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Local environment variables
+.env.local
+.env.development.local
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+storage/uploads/*
+storage/processed/*
+storage/vectors/*
+
+# Keep empty directories with .gitkeep
+!storage/uploads/.gitkeep
+!storage/processed/.gitkeep
+!storage/vectors/.gitkeep
