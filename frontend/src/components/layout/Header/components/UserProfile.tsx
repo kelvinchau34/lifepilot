@@ -36,7 +36,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
       </div>
       <div className="text-sm">
         <div className="font-medium text-gray-800">{user.name}</div>
-        <div className="text-gray-500 capitalize">{user.subscription} User</div>
+        <div className="text-gray-500 capitalize">{user.subscription.status} User</div>
       </div>
     </div>
   );

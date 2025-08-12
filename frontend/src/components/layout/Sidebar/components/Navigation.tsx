@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Calendar, DollarSign, Heart, BookOpen } from 'lucide-react';
+import { Brain, Calendar, DollarSign, Heart, BookOpen, Activity } from 'lucide-react';
 import { Agent } from '../../../../utils/types';
 
 interface NavigationProps {
@@ -13,7 +13,8 @@ const ICON_MAP = {
   Calendar,
   DollarSign,
   Heart,
-  BookOpen
+  BookOpen,
+  Activity
 };
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -52,6 +53,28 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
           );
         })}
+        <button
+          onClick={() => onAgentChange('health')}
+          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            activeAgent === 'health'
+              ? 'bg-blue-50 border-r-4 border-blue-500 text-blue-700'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+          }`}
+        >
+          <div className={`p-2 rounded-lg ${
+            activeAgent === 'health' 
+              ? 'bg-green-500' 
+              : 'bg-gray-100'
+          }`}>
+            <Activity className={`w-4 h-4 ${
+              activeAgent === 'health' ? 'text-white' : 'text-gray-600'
+            }`} />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="font-medium">Health</div>
+            <div className="text-xs text-gray-500">Monitor your health</div>
+          </div>
+        </button>
       </div>
     </nav>
   );

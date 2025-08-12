@@ -4,15 +4,21 @@ export interface Agent {
   icon: string;
   color: string;
   description: string;
-  status: 'active' | 'inactive' | 'loading';
+  status: 'active' | 'inactive' | 'maintenance';
+}
+
+export interface Subscription {
+  status: 'active' | 'canceled' | 'expired' | 'trial';
+  plan: string;
+  expiresAt: string;
 }
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
-  subscription: 'free' | 'premium' | 'enterprise';
+  avatar: string;
+  subscription: Subscription;
 }
 
 export interface AppState {
