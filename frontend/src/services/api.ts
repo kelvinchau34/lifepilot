@@ -1,43 +1,82 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-const HEALTH_AI_BASE_URL = process.env.REACT_APP_HEALTH_AI_URL || 'http://localhost:8000';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const HEALTH_AI_BASE_URL = process.env.REACT_APP_HEALTH_AI_URL || 'http://localhost:8001';
+
+// Create axios instance for main API
+const apiInstance: AxiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to add auth token
+apiInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for error handling
+apiInstance.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired, redirect to login
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const apiConfig = {
   baseURL: API_BASE_URL,
   healthAI: HEALTH_AI_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 };
 
 // HTTP client wrapper
 export const apiClient = {
-  async get(endpoint: string, options?: RequestInit) {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers: apiConfig.headers,
-      ...options,
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return response.json();
+  async get(endpoint: string, config?: any) {
+    const response = await apiInstance.get(endpoint, config);
+    return response.data;
   },
 
-  async post(endpoint: string, data?: any, options?: RequestInit) {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: apiConfig.headers,
-      body: data ? JSON.stringify(data) : undefined,
-      ...options,
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return response.json();
+  async post(endpoint: string, data?: any, config?: any) {
+    const response = await apiInstance.post(endpoint, data, config);
+    return response.data;
   },
 
-  async uploadFile(endpoint: string, formData: FormData) {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      body: formData, // Don't set Content-Type for FormData
+  async put(endpoint: string, data?: any, config?: any) {
+    const response = await apiInstance.put(endpoint, data, config);
+    return response.data;
+  },
+
+  async delete(endpoint: string, config?: any) {
+    const response = await apiInstance.delete(endpoint, config);
+    return response.data;
+  },
+
+  async uploadFile(endpoint: string, formData: FormData, onProgress?: (progress: number) => void) {
+    const response = await apiInstance.post(endpoint, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(progress);
+        }
+      },
     });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return response.json();
+    return response.data;
   },
 };

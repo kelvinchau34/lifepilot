@@ -1,6 +1,7 @@
+// frontend/src/components/agents/health/HealthDocumentUploader.tsx
 import React, { useState, useCallback } from 'react';
 import Button from '../common/Button/Button';
-import { healthService, ProcessingStatus } from '../../../services/healthService';
+import { healthService, ProcessingStatus, UploadResponse } from '../../../services/healthService';
 
 interface HealthDocumentUploaderProps {
   onUploadComplete?: (documentId: string) => void;
@@ -35,7 +36,7 @@ export const HealthDocumentUploader: React.FC<HealthDocumentUploaderProps> = ({
 
     try {
       // Upload the document
-      const document = await healthService.uploadDocument(file, (progress) => {
+      const uploadResponse: UploadResponse = await healthService.uploadDocument(file, (progress) => {
         setUploadStatus({ status: 'uploading', progress });
       });
 
@@ -44,11 +45,11 @@ export const HealthDocumentUploader: React.FC<HealthDocumentUploaderProps> = ({
       
       const pollStatus = async () => {
         try {
-          const status = await healthService.getProcessingStatus(document.id);
+          const status = await healthService.getProcessingStatus(uploadResponse.reportId);
           setUploadStatus(status);
 
           if (status.status === 'completed') {
-            onUploadComplete?.(document.id);
+            onUploadComplete?.(uploadResponse.reportId);
             setTimeout(() => {
               setSelectedFile(null);
               setUploadStatus({ status: 'uploading', progress: 0 });

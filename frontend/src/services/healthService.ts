@@ -1,35 +1,8 @@
+// frontend/src/services/healthService.ts
 import { apiClient } from './api';
+import { HealthDocument, HealthReport, ProcessingStatus } from '../utils/types';
 
-export interface HealthDocument {
-  id: string;
-  filename: string;
-  originalName: string;
-  size: number;
-  mimetype: string;
-  uploadedAt: string;
-  processed: boolean;
-  ocrText?: string;
-  entities?: any[];
-  embeddings?: number[];
-}
-
-export interface HealthReport {
-  id: string;
-  title: string;
-  summary: string;
-  keyFindings: string[];
-  recommendations: string[];
-  documents: HealthDocument[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ProcessingStatus {
-  status: 'uploading' | 'processing' | 'completed' | 'error';
-  progress: number;
-  message?: string;
-  documentId?: string;
-}
+export type { HealthDocument, HealthReport, ProcessingStatus };
 
 export const healthService = {
   // Upload and process health document
@@ -37,15 +10,9 @@ export const healthService = {
     const formData = new FormData();
     formData.append('document', file);
     
-    // If you want to track upload progress
-    if (onProgress) {
-      // You could implement XMLHttpRequest for progress tracking
-      // For now, we'll use the simpler fetch approach
-    }
-
     try {
       const result = await apiClient.uploadFile('/api/agents/health/upload', formData);
-      return result.document;
+      return result.document || result;
     } catch (error) {
       console.error('Upload error:', error);
       throw new Error('Failed to upload document');
@@ -66,10 +33,11 @@ export const healthService = {
   async getDocuments(): Promise<HealthDocument[]> {
     try {
       const result = await apiClient.get('/api/agents/health/documents');
-      return result.documents || [];
+      return result.documents || result || [];
     } catch (error) {
       console.error('Get documents error:', error);
-      throw new Error('Failed to fetch documents');
+      // Return empty array instead of throwing error for better UX
+      return [];
     }
   },
 
@@ -77,10 +45,11 @@ export const healthService = {
   async getReports(): Promise<HealthReport[]> {
     try {
       const result = await apiClient.get('/api/agents/health/reports');
-      return result.reports || [];
+      return result.reports || result || [];
     } catch (error) {
       console.error('Get reports error:', error);
-      throw new Error('Failed to fetch reports');
+      // Return empty array instead of throwing error for better UX
+      return [];
     }
   },
 
@@ -88,7 +57,7 @@ export const healthService = {
   async getReport(reportId: string): Promise<HealthReport> {
     try {
       const result = await apiClient.get(`/api/agents/health/reports/${reportId}`);
-      return result.report;
+      return result.report || result;
     } catch (error) {
       console.error('Get report error:', error);
       throw new Error('Failed to fetch report');
@@ -111,7 +80,11 @@ export const healthService = {
   // Search documents and reports
   async search(query: string): Promise<{ documents: HealthDocument[], reports: HealthReport[] }> {
     try {
-      return await apiClient.post('/api/agents/health/search', { query });
+      const result = await apiClient.post('/api/agents/health/search', { query });
+      return {
+        documents: result.documents || [],
+        reports: result.reports || []
+      };
     } catch (error) {
       console.error('Search error:', error);
       throw new Error('Failed to search');
@@ -125,6 +98,16 @@ export const healthService = {
     } catch (error) {
       console.error('Delete document error:', error);
       throw new Error('Failed to delete document');
+    }
+  },
+
+  // Analyze document (trigger AI processing)
+  async analyzeDocument(documentId: string): Promise<any> {
+    try {
+      return await apiClient.post(`/api/agents/health/documents/${documentId}/analyze`, {});
+    } catch (error) {
+      console.error('Analyze document error:', error);
+      throw new Error('Failed to analyze document');
     }
   },
 };

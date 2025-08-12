@@ -1,3 +1,15 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  subscription: {
+    status: 'active' | 'canceled' | 'expired' | 'trial';
+    plan: string;
+    expiresAt: string;
+  };
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -7,32 +19,68 @@ export interface Agent {
   status: 'active' | 'inactive' | 'maintenance';
 }
 
-export interface Subscription {
-  status: 'active' | 'canceled' | 'expired' | 'trial';
-  plan: string;
-  expiresAt: string;
+// Unified HealthDocument interface based on your backend structure
+export interface HealthDocument {
+  _id?: string;           // MongoDB ID
+  id?: string;            // Alternative ID
+  filename: string;       // Backend filename
+  originalName?: string;  // Original filename
+  name?: string;          // Alternative name field
+  size?: number;          // File size
+  fileSize?: number;      // Alternative size field
+  mimetype?: string;      // MIME type
+  uploadedAt?: string;    // Upload timestamp
+  uploadDate?: string;    // Alternative upload date field
+  createdAt?: string;     // Created timestamp
+  processed?: boolean;    // Processing status
+  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Processing status
+  ocrText?: string;       // OCR extracted text
+  entities?: any[];       // NER entities
+  embeddings?: number[];  // Vector embeddings
+  metadata?: any;         // Additional metadata
+  path?: string;          // File path
+  userId?: string;        // User ID
 }
 
-export interface User {
+// Unified HealthReport interface based on your backend structure
+export interface HealthReport {
+  _id?: string;
   id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  subscription: Subscription;
-}
-
-export interface AppState {
-  activeAgent: string;
-  user: User | null;
-  isLoading: boolean;
-  notifications: Notification[];
-}
-
-export interface Notification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
   title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
+  summary: string;
+  keyFindings: string[];
+  recommendations: string[];
+  documents: HealthDocument[];
+  createdAt: string;
+  updatedAt: string;
+  userId?: string;
+  analysisResults?: any;
+  metadata?: any;
+}
+
+export interface ProcessingStatus {
+  status: 'uploading' | 'processing' | 'completed' | 'error';
+  progress: number;
+  message?: string;
+  documentId?: string;
+}
+
+// Additional interfaces for components
+export interface UploadResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    reportId: string;
+    filename: string;
+    status: string;
+  };
+  error?: string;
+}
+
+export interface SearchResult {
+  index: number;
+  document: string;
+  similarity: number;
+  reportId: string;
+  reportName: string;
 }
